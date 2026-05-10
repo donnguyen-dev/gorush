@@ -271,16 +271,15 @@
     .playground-link {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
-      font-size: 0.72rem;
+      gap: 4px;
+      font-size: 0.7rem;
       color: var(--muted);
       text-decoration: none;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border: 1px solid var(--border);
       border-radius: 4px;
       transition: color 0.15s, border-color 0.15s;
-      float: right;
-      margin: 10px 18px 0 0;
+      white-space: nowrap;
     }
     .playground-link:hover { color: var(--blue); border-color: var(--blue); }
 
@@ -416,11 +415,13 @@
         <div class="card" id="card">
           <div class="card-meta">
             <span class="topic">${esc(q.topic)}</span>
-            <span class="badge badge-${q.difficulty}">${badge(q.difficulty)}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              ${playgroundUrl(q.id)}
+              <span class="badge badge-${q.difficulty}">${badge(q.difficulty)}</span>
+            </div>
           </div>
           <div class="card-question">${esc(q.question)}</div>
           <pre><code class="language-go">${esc(q.code)}</code></pre>
-          ${playgroundUrl(q.id)}
           <div class="options" id="opts">
             ${q.options.map((o, i) => `
               <button class="option" id="o${i}" onclick="pick(${i})">
