@@ -14,7 +14,16 @@ const QUESTIONS = new Function(src + '; return QUESTIONS;')();
 
 let passed = 0, failed = 0, failedIds = [];
 
+let skipped = 0;
+
 for (const q of QUESTIONS) {
+  // Conceptual questions (code: null) cannot be run — skip them
+  if (!q.code) {
+    console.log(`⏭️  Q${q.id} [${q.topic}]: conceptual (skipped)`);
+    skipped++;
+    continue;
+  }
+
   const expected = q.options[q.answer];
 
   // Write code snippet to a temp file and run it
@@ -59,7 +68,7 @@ for (const q of QUESTIONS) {
   }
 }
 
-console.log(`\n${passed}/${QUESTIONS.length} passed`);
+console.log(`\n${passed}/${QUESTIONS.length - skipped} code questions passed, ${skipped} conceptual skipped`);
 if (failed > 0) {
   console.log(`Failed: ${failedIds.map(id => 'Q' + id).join(', ')}`);
   process.exit(1);
