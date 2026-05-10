@@ -1,0 +1,22 @@
+name: Validate Questions
+
+on:
+  push:
+    branches: [main]
+    paths: [questions.js]
+  pull_request:
+    paths: [questions.js]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Run each question through go run and compare output
+        run: node validate.js
