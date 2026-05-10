@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GoRush — Go Code Quiz</title>
+  <meta name="description" content="Test your Go code reading skills. 3 lives, increasing difficulty.">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="questions.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:      #00ADD8;
+      --blue-dark: #007D9C;
+      --bg:        #0D1117;
+      --surface:   #161B22;
+      --border:    #30363D;
+      --text:      #E6EDF3;
+      --muted:     #8B949E;
+      --green:     #2EA043;
+      --green-bg:  #0D4429;
+      --red:       #F85149;
+      --red-bg:    #4A0D0C;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #app { width: 100%; max-width: 700px; }
+
+    /* ── Buttons ── */
+    .btn {
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--blue);
+      color: #fff;
+      padding: 13px 44px;
+      font-size: 1rem;
+    }
+    .btn-primary:hover { background: var(--blue-dark); }
+    .btn-next {
+      background: var(--blue);
+      color: #fff;
+      padding: 8px 20px;
+      font-size: 0.875rem;
+      margin-top: 12px;
+      border-radius: 6px;
+    }
+    .btn-next:hover { background: var(--blue-dark); }
+
+    /* ── Start Screen ── */
+    .start {
+      text-align: center;
+      padding: 64px 32px;
+    }
+    .start-logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .start-logo h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--blue);
+      letter-spacing: -1px;
+    }
+    .start-logo .gopher { font-size: 2.8rem; }
+    .start-tagline {
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.65;
+      margin-bottom: 36px;
+    }
+    .start-rules {
+      display: flex;
+      justify-content: center;
+      gap: 36px;
+      margin-bottom: 40px;
+    }
+    .start-rule {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .start-rule-icon { font-size: 1.5rem; }
+
+    /* ── Game Screen ── */
+    .game { display: flex; flex-direction: column; gap: 16px; }
+
+    .game-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .lives { font-size: 1.4rem; letter-spacing: 3px; }
+    .score { font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+    .score span { color: var(--blue); font-size: 1.1rem; }
+
+    .progress-track {
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--blue);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .progress-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    /* ── Question Card ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+    }
+    .topic { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
+    .badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .badge-1 { background: #0D4429; color: #3FB950; }
+    .badge-2 { background: #3D2200; color: #F0883E; }
+    .badge-3 { background: #4A0D0C; color: #F85149; }
+
+    .card-question {
+      padding: 16px 18px 4px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .card pre {
+      margin: 0;
+      border-radius: 0;
+    }
+    .card pre code.hljs {
+      font-size: 0.85rem;
+      line-height: 1.6;
+      padding: 14px 18px;
+      tab-size: 4;
+      -moz-tab-size: 4;
+    }
+
+    /* ── Options ── */
+    .options {
+      padding: 4px 18px 18px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    @media (max-width: 480px) {
+      .options { grid-template-columns: 1fr; }
+    }
+
+    .option {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      text-align: left;
+      transition: border-color 0.12s, background 0.12s;
+      font-family: inherit;
+      line-height: 1.4;
+    }
+    .option:hover:not(:disabled) {
+      border-color: var(--blue);
+      background: rgba(0,173,216,0.06);
+    }
+    .option:disabled { cursor: default; }
+    .option.correct  { border-color: var(--green) !important; background: var(--green-bg) !important; }
+    .option.wrong    { border-color: var(--red)   !important; background: var(--red-bg)   !important; }
+
+    .option-num {
+      background: var(--border);
+      color: var(--muted);
+      border-radius: 4px;
+      min-width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .option.correct .option-num { background: var(--green); color: #fff; }
+    .option.wrong   .option-num { background: var(--red);   color: #fff; }
+
+    .option-text {
+      white-space: pre-line;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+
+    /* ── Explanation ── */
+    .explanation {
+      margin: 0 18px 18px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      line-height: 1.65;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      animation: fadeIn 0.2s ease;
+    }
+    .explanation.correct-fb { background: var(--green-bg); border: 1px solid var(--green); }
+    .explanation.wrong-fb   { background: var(--red-bg);   border: 1px solid var(--red);   }
+    .explanation-icon { flex-shrink: 0; font-weight: 700; margin-top: 2px; }
+    .explanation-body { flex: 1; }
+    .explanation code {
+      background: rgba(255,255,255,0.12);
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      font-size: 0.82em;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .kbd-hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: center;
+    }
+    .kbd-hint kbd {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-size: 0.72rem;
+      font-family: inherit;
+    }
+
+    /* ── Game Over Screen ── */
+    .gameover {
+      text-align: center;
+      padding: 64px 32px;
+    }
+    .gameover-icon { font-size: 4rem; margin-bottom: 16px; }
+    .gameover h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+    .gameover-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 32px; }
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      margin-bottom: 40px;
+    }
+    .stat { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .stat-val {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--blue);
+      line-height: 1;
+    }
+    .stat-lbl {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+  // ── State ─────────────────────────────────────────────────────────
+  let lives, score, idx, answered, queue;
+
+  // ── Helpers ───────────────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function hearts(n) {
+    return '❤️'.repeat(n) + '🖤'.repeat(3 - n);
+  }
+
+  function badge(d) {
+    return ['', 'Easy', 'Medium', 'Hard'][d];
+  }
+
+  // ── Screens ───────────────────────────────────────────────────────
+  function showStart() {
+    document.getElementById('app').innerHTML = `
+      <div class="start">
+        <div class="start-logo">
+          <span class="gopher">🐹</span>
+          <h1>GoRush</h1>
+        </div>
+        <p class="start-tagline">
+          Read the code. Pick the output.<br>
+          Questions get harder as you go — 3 lives to spend.
+        </p>
+        <div class="start-rules">
+          <div class="start-rule">
+            <span class="start-rule-icon">❤️</span>
+            <span>3 lives</span>
+          </div>
+          <div class="start-rule">
+            <span class="start-rule-icon">📈</span>
+            <span>3 difficulty tiers</span>
+          </div>
+          <div class="start-rule">
+            <span class="start-rule-icon">⌨️</span>
+            <span>Keys 1 – 4</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="startGame()">Start Rush</button>
+      </div>
+    `;
+  }
+
+  function showGame() {
+    const q = queue[idx];
+    const pct = Math.round((idx / queue.length) * 100);
+
+    document.getElementById('app').innerHTML = `
+      <div class="game">
+        <div class="game-hud">
+          <div class="lives">${hearts(lives)}</div>
+          <div class="score">Score <span>${score}</span></div>
+        </div>
+
+        <div class="progress-track">
+          <div class="progress-fill" style="width:${pct}%"></div>
+        </div>
+        <div class="progress-label">Q${idx + 1} / ${queue.length}</div>
+
+        <div class="card" id="card">
+          <div class="card-meta">
+            <span class="topic">${esc(q.topic)}</span>
+            <span class="badge badge-${q.difficulty}">${badge(q.difficulty)}</span>
+          </div>
+          <div class="card-question">${esc(q.question)}</div>
+          <pre><code class="language-go">${esc(q.code)}</code></pre>
+          <div class="options" id="opts">
+            ${q.options.map((o, i) => `
+              <button class="option" id="o${i}" onclick="pick(${i})">
+                <span class="option-num">${i + 1}</span>
+                <span class="option-text">${esc(o)}</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="kbd-hint">
+          <kbd>1</kbd>–<kbd>4</kbd> to answer &nbsp;·&nbsp; <kbd>Enter</kbd> or <kbd>Space</kbd> to continue
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+  }
+
+  function showGameOver() {
+    const cleared = idx >= queue.length;
+    document.getElementById('app').innerHTML = `
+      <div class="gameover">
+        <div class="gameover-icon">${cleared ? '🎉' : '💀'}</div>
+        <h2>${cleared ? 'You cleared it!' : 'Game Over'}</h2>
+        <p class="gameover-sub">${cleared ? 'Every question answered correctly.' : `${3 - lives} mistake${3 - lives !== 1 ? 's' : ''} ended your run.`}</p>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-val">${score}</span>
+            <span class="stat-lbl">Correct</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">${idx}</span>
+            <span class="stat-lbl">Attempted</span>
+          </div>
+          <div class="stat">
+            <span class="stat-val">${3 - lives}</span>
+            <span class="stat-lbl">Mistakes</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="startGame()">Play Again</button>
+      </div>
+    `;
+  }
+
+  // ── Game Logic ────────────────────────────────────────────────────
+  function startGame() {
+    lives = 3; score = 0; idx = 0; answered = false;
+    queue = [
+      ...shuffle(QUESTIONS.filter(q => q.difficulty === 1)),
+      ...shuffle(QUESTIONS.filter(q => q.difficulty === 2)),
+      ...shuffle(QUESTIONS.filter(q => q.difficulty === 3)),
+    ];
+    showGame();
+  }
+
+  function pick(i) {
+    if (answered) return;
+    answered = true;
+
+    const q = queue[idx];
+    const correct = i === q.answer;
+    if (correct) score++; else lives--;
+
+    // Mark buttons
+    for (let j = 0; j < q.options.length; j++) {
+      const btn = document.getElementById('o' + j);
+      btn.disabled = true;
+      if (j === q.answer) btn.classList.add('correct');
+      else if (j === i)   btn.classList.add('wrong');
+    }
+
+    // Append explanation
+    const card = document.getElementById('card');
+    const div = document.createElement('div');
+    div.className = `explanation ${correct ? 'correct-fb' : 'wrong-fb'}`;
+    div.innerHTML = `
+      <span class="explanation-icon">${correct ? '✓' : '✗'}</span>
+      <div class="explanation-body">
+        ${q.explanation}
+        <br>
+        <button class="btn btn-next" onclick="next()">Next →</button>
+      </div>
+    `;
+    card.appendChild(div);
+  }
+
+  function next() {
+    idx++;
+    answered = false;
+    if (lives <= 0 || idx >= queue.length) showGameOver();
+    else showGame();
+  }
+
+  // ── Keyboard ──────────────────────────────────────────────────────
+  document.addEventListener('keydown', e => {
+    if (e.key >= '1' && e.key <= '4' && !answered) {
+      pick(parseInt(e.key) - 1);
+    } else if ((e.key === 'Enter' || e.key === ' ') && answered) {
+      e.preventDefault();
+      next();
+    }
+  });
+
+  // ── Boot ──────────────────────────────────────────────────────────
+  showStart();
+</script>
+</body>
+</html>
