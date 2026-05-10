@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="questions.js"></script>
+  <script src="links.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -267,6 +268,22 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    .playground-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: none;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      transition: color 0.15s, border-color 0.15s;
+      float: right;
+      margin: 10px 18px 0 0;
+    }
+    .playground-link:hover { color: var(--blue); border-color: var(--blue); }
+
     .kbd-hint {
       font-size: 0.72rem;
       color: var(--muted);
@@ -318,6 +335,12 @@
   let lives, score, idx, answered, queue;
 
   // ── Helpers ───────────────────────────────────────────────────────
+  function playgroundUrl(id) {
+    const url = (typeof PLAYGROUND_LINKS !== 'undefined') && PLAYGROUND_LINKS[id];
+    if (!url) return '';
+    return `<a class="playground-link" href="${url}" target="_blank" rel="noopener">▶ Run in Playground</a>`;
+  }
+
   function esc(s) {
     return String(s)
       .replace(/&/g, '&amp;')
@@ -397,6 +420,7 @@
           </div>
           <div class="card-question">${esc(q.question)}</div>
           <pre><code class="language-go">${esc(q.code)}</code></pre>
+          ${playgroundUrl(q.id)}
           <div class="options" id="opts">
             ${q.options.map((o, i) => `
               <button class="option" id="o${i}" onclick="pick(${i})">
