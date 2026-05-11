@@ -3130,5 +3130,1500 @@ func main() {
     explanation: "<code>context.WithCancel</code> returns a child context and a <code>CancelFunc</code>. Calling <code>cancel()</code> closes <code>ctx.Done()</code>, signalling goroutines that select on it to exit cleanly — enabling cooperative cancellation across API boundaries."
   },
 
+  // ─── React: Tier 1 — Easy ────────────────────────────────────────
+
+  {
+    id: 151,
+    difficulty: 1,
+    lang: "react",
+    topic: "useState Initial Value",
+    code: `function Counter() {
+  const [count, setCount] = React.useState(5);
+  return <span>{count}</span>;
+}`,
+    question: "What does Counter render initially?",
+    options: ["0", "5", "undefined", "null"],
+    answer: 1,
+    explanation: "<code>useState(5)</code> initializes <code>count</code> to <code>5</code>. The component renders that value directly."
+  },
+
+  {
+    id: 152,
+    difficulty: 1,
+    lang: "react",
+    topic: "Props",
+    code: `function Greet({ name }) {
+  return <p>Hello, {name}!</p>;
+}
+
+// rendered as: <Greet name="Alice" />`,
+    question: "What text does this component render?",
+    options: ["Hello, !", "Hello, name!", "Hello, Alice!", "Hello, {name}!"],
+    answer: 2,
+    explanation: "The <code>name</code> prop is destructured from the props object. <code>{name}</code> in JSX interpolates the string <code>\"Alice\"</code>."
+  },
+
+  {
+    id: 153,
+    difficulty: 1,
+    lang: "react",
+    topic: "JSX Expression",
+    code: `function App() {
+  const x = 2 + 3;
+  return <div>{x}</div>;
+}`,
+    question: "What does this component render?",
+    options: ["2 + 3", "x", "5", "undefined"],
+    answer: 2,
+    explanation: "JavaScript expressions inside <code>{}</code> in JSX are evaluated. <code>2 + 3</code> evaluates to <code>5</code>, which is then rendered as text."
+  },
+
+  {
+    id: 154,
+    difficulty: 1,
+    lang: "react",
+    topic: "Conditional Rendering",
+    code: `function App() {
+  const show = false;
+  return <div>{show && <span>visible</span>}</div>;
+}`,
+    question: "What does this component render?",
+    options: ["visible", "false", "An empty div", "nothing — it errors"],
+    answer: 2,
+    explanation: "When the left side of <code>&&</code> is <code>false</code>, React skips rendering the right side. The <code>div</code> renders with no children — an empty div."
+  },
+
+  {
+    id: 155,
+    difficulty: 1,
+    lang: "react",
+    topic: "List Rendering",
+    code: `function List() {
+  const items = ["a", "b", "c"];
+  return (
+    <ul>
+      {items.map((item, i) => <li key={i}>{item}</li>)}
+    </ul>
+  );
+}`,
+    question: "How many <li> elements does this render?",
+    options: ["0", "1", "2", "3"],
+    answer: 3,
+    explanation: "<code>items.map</code> produces one <code>&lt;li&gt;</code> for each element in the array. The array has 3 elements, so 3 list items are rendered."
+  },
+
+  {
+    id: 156,
+    difficulty: 1,
+    lang: "react",
+    topic: "Event Handler",
+    code: `function Btn() {
+  function handleClick() {
+    console.log("clicked");
+  }
+  return <button onClick={handleClick}>Click me</button>;
+}`,
+    question: "What is logged when the button is clicked?",
+    options: ["handleClick", "clicked", "undefined", "nothing — it errors"],
+    answer: 1,
+    explanation: "<code>onClick={handleClick}</code> passes the function reference. When clicked, React calls <code>handleClick()</code>, which logs <code>\"clicked\"</code>."
+  },
+
+  {
+    id: 157,
+    difficulty: 1,
+    lang: "react",
+    topic: "JSX Rules",
+    code: `function App() {
+  return (
+    <div>
+      <p>First</p>
+      <p>Second</p>
+    </div>
+  );
+}`,
+    question: "Why is the outer <div> required here?",
+    options: [
+      "div is the only valid JSX wrapper element",
+      "JSX expressions must have a single root element",
+      "React requires div for styling purposes",
+      "It is not required — two root elements are fine"
+    ],
+    answer: 1,
+    explanation: "JSX must return a single root element. Without a wrapper, returning two sibling <code>&lt;p&gt;</code> tags would be a syntax error. A <code>React.Fragment</code> (<code>&lt;&gt;&lt;/&gt;</code>) is an alternative to <code>&lt;div&gt;</code>."
+  },
+
+  {
+    id: 158,
+    difficulty: 1,
+    lang: "react",
+    topic: "Default Props",
+    code: `function Label({ text = "default" }) {
+  return <span>{text}</span>;
+}
+
+// rendered as: <Label />`,
+    question: "What does this component render?",
+    options: ["(nothing)", "undefined", "default", "text"],
+    answer: 2,
+    explanation: "When <code>text</code> is not supplied, the destructuring default <code>\"default\"</code> is used. The component renders the string <code>default</code>."
+  },
+
+  {
+    id: 159,
+    difficulty: 1,
+    lang: "react",
+    topic: "useState Setter",
+    code: `function Counter() {
+  const [n, setN] = React.useState(0);
+  return (
+    <button onClick={() => setN(n + 1)}>
+      {n}
+    </button>
+  );
+}`,
+    question: "What does the button display initially?",
+    options: ["n", "1", "0", "undefined"],
+    answer: 2,
+    explanation: "<code>useState(0)</code> sets the initial state to <code>0</code>. Before any click, the button renders <code>0</code>."
+  },
+
+  {
+    id: 160,
+    difficulty: 1,
+    lang: "react",
+    topic: "Boolean Rendering",
+    code: `function App() {
+  return <div>{true}</div>;
+}`,
+    question: "What does this component render?",
+    options: ["true", "1", "An empty div", "compile error"],
+    answer: 2,
+    explanation: "React does not render <code>true</code>, <code>false</code>, <code>null</code>, or <code>undefined</code> as visible text. The result is an empty <code>&lt;div&gt;</code>."
+  },
+
+  {
+    id: 161,
+    difficulty: 1,
+    lang: "react",
+    topic: "Ternary Rendering",
+    code: `function App({ isLoggedIn }) {
+  return <div>{isLoggedIn ? "Welcome" : "Log in"}</div>;
+}
+
+// rendered as: <App isLoggedIn={true} />`,
+    question: "What text does this render?",
+    options: ["Log in", "Welcome", "true", "isLoggedIn"],
+    answer: 1,
+    explanation: "With <code>isLoggedIn={true}</code>, the ternary evaluates to <code>\"Welcome\"</code>."
+  },
+
+  {
+    id: 162,
+    difficulty: 1,
+    lang: "react",
+    topic: "Fragment",
+    code: `function App() {
+  return (
+    <>
+      <span>A</span>
+      <span>B</span>
+    </>
+  );
+}`,
+    question: "What does <> ... </> represent in JSX?",
+    options: [
+      "An HTML template tag",
+      "A React.Fragment — a wrapper that adds no DOM node",
+      "A syntax error in older React versions",
+      "A shorthand for <div>"
+    ],
+    answer: 1,
+    explanation: "<code>&lt;&gt;&lt;/&gt;</code> is shorthand for <code>&lt;React.Fragment&gt;</code>. It lets you return multiple elements without adding an extra DOM node."
+  },
+
+  {
+    id: 163,
+    difficulty: 1,
+    lang: "react",
+    topic: "Prop Types",
+    code: `function Square({ size }) {
+  return <div style={{ width: size, height: size }} />;
+}
+
+// rendered as: <Square size={40} />`,
+    question: "What width does the rendered div have?",
+    options: ["'40'", "40", "40px", "undefined"],
+    answer: 1,
+    explanation: "The <code>size</code> prop receives the number <code>40</code>. The style object uses that number directly as <code>width: 40</code>, which browsers interpret as <code>40px</code>. The value stored in the object is the number <code>40</code>."
+  },
+
+  {
+    id: 164,
+    difficulty: 1,
+    lang: "react",
+    topic: "className vs class",
+    code: null,
+    question: "Which of the following is true about JSX attribute naming?",
+    options: [
+      "Use class= for CSS classes in JSX",
+      "Use className= for CSS classes in JSX because class is a reserved word in JavaScript",
+      "Both class= and className= work in JSX",
+      "CSS classes are applied via the style= attribute in JSX"
+    ],
+    answer: 1,
+    explanation: "JSX is compiled to JavaScript, so reserved words like <code>class</code> cannot be used as attribute names. React uses <code>className</code> instead, which maps to the DOM <code>class</code> attribute."
+  },
+
+  {
+    id: 165,
+    difficulty: 1,
+    lang: "react",
+    topic: "Number Rendering",
+    code: `function App() {
+  return <div>{0}</div>;
+}`,
+    question: "What does this component render?",
+    options: ["An empty div", "0", "false", "nothing — it errors"],
+    answer: 1,
+    explanation: "Unlike <code>false</code>, <code>null</code>, and <code>undefined</code>, the number <code>0</code> <em>is</em> rendered by React. The div displays the text <code>0</code>. This is a common bug when using <code>{count && &lt;Component /&gt;}</code> with a zero count."
+  },
+
+  // ─── React: Tier 2 — Medium ──────────────────────────────────────
+
+  {
+    id: 166,
+    difficulty: 2,
+    lang: "react",
+    topic: "useEffect Timing",
+    code: `function App() {
+  console.log("render");
+  React.useEffect(() => {
+    console.log("effect");
+  }, []);
+  return <div />;
+}`,
+    question: "In what order are the logs printed on first mount?",
+    options: ["effect\nrender", "render\neffect", "render\nrender\neffect", "effect only"],
+    answer: 1,
+    explanation: "The component body (including <code>console.log(\"render\")</code>) runs first during the render phase. <code>useEffect</code> fires <em>after</em> the DOM has been painted — always after render."
+  },
+
+  {
+    id: 167,
+    difficulty: 2,
+    lang: "react",
+    topic: "useState Functional Update",
+    code: `function Counter() {
+  const [n, setN] = React.useState(0);
+
+  function triple() {
+    setN(prev => prev + 1);
+    setN(prev => prev + 1);
+    setN(prev => prev + 1);
+  }
+
+  return <button onClick={triple}>{n}</button>;
+}`,
+    question: "What does the button display after one click?",
+    options: ["0", "1", "2", "3"],
+    answer: 3,
+    explanation: "Functional updates (<code>prev => prev + 1</code>) chain on the <em>latest queued state</em>, not the captured snapshot. Each call receives the result of the previous, so the state becomes <code>0→1→2→3</code> within the same event."
+  },
+
+  {
+    id: 168,
+    difficulty: 2,
+    lang: "react",
+    topic: "Stale Closure in Handler",
+    code: `function Counter() {
+  const [n, setN] = React.useState(0);
+
+  function triple() {
+    setN(n + 1);
+    setN(n + 1);
+    setN(n + 1);
+  }
+
+  return <button onClick={triple}>{n}</button>;
+}`,
+    question: "What does the button display after one click?",
+    options: ["0", "1", "2", "3"],
+    answer: 1,
+    explanation: "All three <code>setN(n + 1)</code> calls close over the <em>same</em> <code>n</code> (which is <code>0</code>). React batches them and applies the last value — <code>0 + 1 = 1</code>. To get <code>3</code>, use the functional form <code>setN(prev => prev + 1)</code>."
+  },
+
+  {
+    id: 169,
+    difficulty: 2,
+    lang: "react",
+    topic: "Controlled Input",
+    code: `function Form() {
+  const [val, setVal] = React.useState("");
+  return (
+    <input
+      value={val}
+      onChange={e => setVal(e.target.value)}
+    />
+  );
+}`,
+    question: "What makes this a controlled input?",
+    options: [
+      "The use of useState",
+      "The value prop is bound to React state and changes are handled via onChange",
+      "The onChange prop uses an arrow function",
+      "The input has no defaultValue"
+    ],
+    answer: 1,
+    explanation: "A controlled input has its <code>value</code> driven by React state. Every keystroke triggers <code>onChange</code>, which calls <code>setVal</code>, which re-renders the input with the new value. React is the single source of truth."
+  },
+
+  {
+    id: 170,
+    difficulty: 2,
+    lang: "react",
+    topic: "useRef",
+    code: `function App() {
+  const ref = React.useRef(0);
+  ref.current += 1;
+  return <span>{ref.current}</span>;
+}`,
+    question: "What is true about this component?",
+    options: [
+      "It increments and re-renders on every update",
+      "It renders 1, and mutating ref.current does not trigger a re-render",
+      "It throws because ref.current is read-only",
+      "It renders undefined because refs are not renderable"
+    ],
+    answer: 1,
+    explanation: "<code>useRef</code> returns a mutable object whose <code>.current</code> property persists across renders but does <em>not</em> trigger re-renders when mutated. The component renders <code>1</code> on the first paint; subsequent renders would show higher values only if something else causes them."
+  },
+
+  {
+    id: 171,
+    difficulty: 2,
+    lang: "react",
+    topic: "Key Prop",
+    code: null,
+    question: "Which of the following best describes the purpose of the key prop in a list?",
+    options: [
+      "It provides an accessible label for screen readers",
+      "It controls the tab order of elements",
+      "It helps React identify which items changed, were added, or removed between renders",
+      "It is required by the browser to render lists efficiently"
+    ],
+    answer: 2,
+    explanation: "React uses <code>key</code> to match elements across renders. A stable, unique key lets React reuse DOM nodes for unchanged items and only update those that changed — avoiding unnecessary re-mounts."
+  },
+
+  {
+    id: 172,
+    difficulty: 2,
+    lang: "react",
+    topic: "useEffect Dependency",
+    code: `function App({ id }) {
+  React.useEffect(() => {
+    console.log("fetch", id);
+  }, [id]);
+  return <div>{id}</div>;
+}`,
+    question: "When does the effect re-run?",
+    options: [
+      "Once on mount only",
+      "Every render",
+      "When id changes between renders",
+      "Never — useEffect with a dep array runs only on unmount"
+    ],
+    answer: 2,
+    explanation: "An effect with a dependency array re-runs whenever any dependency changes (using <code>Object.is</code> comparison). Here, the effect re-runs each time <code>id</code> receives a new value."
+  },
+
+  {
+    id: 173,
+    difficulty: 2,
+    lang: "react",
+    topic: "Lifting State",
+    code: `function Parent() {
+  const [val, setVal] = React.useState("");
+  return (
+    <>
+      <Child value={val} onChange={setVal} />
+      <p>{val}</p>
+    </>
+  );
+}
+
+function Child({ value, onChange }) {
+  return <input value={value} onChange={e => onChange(e.target.value)} />;
+}`,
+    question: "What pattern does this code demonstrate?",
+    options: [
+      "Context API",
+      "Lifting state up",
+      "Render props",
+      "Portal rendering"
+    ],
+    answer: 1,
+    explanation: "The state lives in <code>Parent</code> and is shared downward via props. <code>Child</code> signals changes via the <code>onChange</code> callback. This is the <em>lifting state up</em> pattern — the parent becomes the single source of truth."
+  },
+
+  {
+    id: 174,
+    difficulty: 2,
+    lang: "react",
+    topic: "React.memo",
+    code: `const Child = React.memo(function Child({ value }) {
+  console.log("Child rendered");
+  return <span>{value}</span>;
+});
+
+function Parent() {
+  const [n, setN] = React.useState(0);
+  return (
+    <>
+      <button onClick={() => setN(n + 1)}>inc</button>
+      <Child value="hello" />
+    </>
+  );
+}`,
+    question: "How many times does 'Child rendered' log when the button is clicked 3 times?",
+    options: ["0", "1", "3", "4"],
+    answer: 1,
+    explanation: "<code>React.memo</code> skips re-rendering when props are shallowly equal. <code>value=\"hello\"</code> never changes, so <code>Child</code> renders only once — on mount. Subsequent parent renders do not re-render the memoized child."
+  },
+
+  {
+    id: 175,
+    difficulty: 2,
+    lang: "react",
+    topic: "useEffect No Deps",
+    code: `function App() {
+  const [n, setN] = React.useState(0);
+  React.useEffect(() => {
+    console.log("effect", n);
+  });
+  return <button onClick={() => setN(n + 1)}>{n}</button>;
+}`,
+    question: "When does the effect run?",
+    options: [
+      "Only on mount",
+      "Only when n changes",
+      "After every render",
+      "Never"
+    ],
+    answer: 2,
+    explanation: "A <code>useEffect</code> with <em>no</em> dependency array runs after <em>every</em> render — both on mount and after every update."
+  },
+
+  {
+    id: 176,
+    difficulty: 2,
+    lang: "react",
+    topic: "Event Object",
+    code: `function Form() {
+  function handleChange(e) {
+    console.log(e.target.value);
+  }
+  return <input onChange={handleChange} />;
+}`,
+    question: "What does console.log print when the user types 'hi' character by character?",
+    options: ["hi (once)", "h\nhi", "h\ni", "e.target.value"],
+    answer: 1,
+    explanation: "<code>onChange</code> fires on every keystroke. When the user types <code>h</code> then <code>i</code>, <code>e.target.value</code> is the full current value of the input: first <code>\"h\"</code>, then <code>\"hi\"</code>."
+  },
+
+  {
+    id: 177,
+    difficulty: 2,
+    lang: "react",
+    topic: "useState Array Update",
+    code: `function App() {
+  const [items, setItems] = React.useState([1, 2, 3]);
+
+  function add() {
+    setItems([...items, 4]);
+  }
+
+  return <button onClick={add}>{items.length}</button>;
+}`,
+    question: "What does the button display after one click?",
+    options: ["3", "4", "1,2,3,4", "[1,2,3,4]"],
+    answer: 1,
+    explanation: "The spread creates a new array <code>[1, 2, 3, 4]</code> and passes it to <code>setItems</code>. After the re-render, <code>items.length</code> is <code>4</code>."
+  },
+
+  {
+    id: 178,
+    difficulty: 2,
+    lang: "react",
+    topic: "Preventing Mutation",
+    code: `function App() {
+  const [list, setList] = React.useState([1, 2, 3]);
+
+  function remove() {
+    list.pop();          // mutates the array
+    setList(list);       // passes same reference
+  }
+
+  return <button onClick={remove}>{list.length}</button>;
+}`,
+    question: "What happens when the button is clicked?",
+    options: [
+      "The list shortens and re-renders correctly",
+      "React throws an error about immutability",
+      "The UI may not update because the array reference did not change",
+      "list.pop() is ignored because state is frozen"
+    ],
+    answer: 2,
+    explanation: "React uses referential equality to detect state changes. <code>list.pop()</code> mutates the existing array in place. <code>setList(list)</code> passes the same reference, so React sees no change and may skip the re-render. Always create a new array: <code>setList(list.slice(0, -1))</code>."
+  },
+
+  {
+    id: 179,
+    difficulty: 2,
+    lang: "react",
+    topic: "useRef DOM Access",
+    code: `function App() {
+  const inputRef = React.useRef(null);
+
+  function focus() {
+    inputRef.current.focus();
+  }
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={focus}>Focus</button>
+    </>
+  );
+}`,
+    question: "What does inputRef.current hold after the component mounts?",
+    options: ["null", "The React element object", "The underlying DOM input node", "A state snapshot of the input"],
+    answer: 2,
+    explanation: "When you attach a <code>ref</code> to a DOM element, React sets <code>ref.current</code> to the actual DOM node after mounting. This allows imperative operations like <code>.focus()</code> or <code>.scrollIntoView()</code>."
+  },
+
+  {
+    id: 180,
+    difficulty: 2,
+    lang: "react",
+    topic: "Derived State",
+    code: `function Cart({ items }) {
+  const total = items.reduce((sum, item) => sum + item.price, 0);
+  return <p>Total: {total}</p>;
+}`,
+    question: "What is the recommended approach demonstrated here?",
+    options: [
+      "Storing total in useState so it persists across renders",
+      "Computing derived values directly during render instead of storing them in state",
+      "Using useEffect to recompute total when items changes",
+      "Using useReducer for complex computations"
+    ],
+    answer: 1,
+    explanation: "<code>total</code> can be derived from <code>items</code> on every render. Storing it in state would require synchronising two pieces of state. Computing it inline — <em>derived state</em> — is simpler and always in sync."
+  },
+
+  {
+    id: 181,
+    difficulty: 2,
+    lang: "react",
+    topic: "Inline Handler Pitfall",
+    code: `function List({ items, onDelete }) {
+  return (
+    <ul>
+      {items.map(item => (
+        <li key={item.id}>
+          {item.name}
+          <button onClick={onDelete(item.id)}>X</button>
+        </li>
+      ))}
+    </ul>
+  );
+}`,
+    question: "What is wrong with onClick={onDelete(item.id)}?",
+    options: [
+      "Nothing — it passes the return value of onDelete as the handler",
+      "onDelete is called immediately during render, not on click",
+      "item.id is not accessible inside map",
+      "onClick does not support function calls — only references"
+    ],
+    answer: 1,
+    explanation: "<code>onClick={onDelete(item.id)}</code> <em>calls</em> the function during render and assigns its return value as the handler. The fix is <code>onClick={() => onDelete(item.id)}</code>, which wraps it in a new function that is called only on click."
+  },
+
+  {
+    id: 182,
+    difficulty: 2,
+    lang: "react",
+    topic: "State Initialization",
+    code: `function App() {
+  const [data, setData] = React.useState(
+    fetch("/api/items").then(r => r.json())
+  );
+  return <div>{String(data)}</div>;
+}`,
+    question: "What is the initial value of data?",
+    options: ["The fetched JSON array", "undefined", "A Promise object", "null"],
+    answer: 2,
+    explanation: "<code>fetch(...).then(...)</code> returns a <code>Promise</code>. <code>useState</code> stores it as-is — it does not await Promises. The initial value is the Promise object, not the resolved data. Use <code>useEffect</code> to fetch asynchronously."
+  },
+
+  {
+    id: 183,
+    difficulty: 2,
+    lang: "react",
+    topic: "Multiple useState",
+    code: `function Form() {
+  const [name, setName] = React.useState("Alice");
+  const [age, setAge] = React.useState(30);
+  return <p>{name} is {age}</p>;
+}`,
+    question: "What does this component render?",
+    options: ["Alice is 30", "name is age", "Alice is age", "undefined is undefined"],
+    answer: 0,
+    explanation: "Each <code>useState</code> call manages its own independent piece of state. <code>name</code> is <code>\"Alice\"</code> and <code>age</code> is <code>30</code>, so the output is <code>Alice is 30</code>."
+  },
+
+  {
+    id: 184,
+    difficulty: 2,
+    lang: "react",
+    topic: "Key Mutation",
+    code: null,
+    question: "What happens when you change the key prop of a component?",
+    options: [
+      "React updates the component in place",
+      "React unmounts the old component and mounts a fresh one",
+      "React logs a warning and keeps the existing component",
+      "The key change has no effect — keys only matter for list order"
+    ],
+    answer: 1,
+    explanation: "React treats elements with different <code>key</code> values as entirely different components. Changing <code>key</code> forces an unmount of the old instance and a mount of a new one — resetting all local state. This is a deliberate reset technique."
+  },
+
+  {
+    id: 185,
+    difficulty: 2,
+    lang: "react",
+    topic: "Lazy State Initializer",
+    code: `function App() {
+  const [n, setN] = React.useState(() => {
+    console.log("init");
+    return 42;
+  });
+  return <span>{n}</span>;
+}`,
+    question: "How many times does 'init' log across the component's lifetime (assume no re-mounts)?",
+    options: ["Once — on first render only", "Once per render", "Never", "Twice — on mount and first update"],
+    answer: 0,
+    explanation: "When <code>useState</code> receives a <em>function</em>, it calls it only once — during the initial render — to compute the initial state. Subsequent renders ignore the initializer. This is the <em>lazy initializer</em> pattern, useful for expensive computations."
+  },
+
+  // ─── React: Tier 3 — Hard ────────────────────────────────────────
+
+  {
+    id: 186,
+    difficulty: 3,
+    lang: "react",
+    topic: "useCallback",
+    code: `const Child = React.memo(function Child({ onClick }) {
+  console.log("Child rendered");
+  return <button onClick={onClick}>Click</button>;
+});
+
+function Parent() {
+  const [n, setN] = React.useState(0);
+
+  const handleClick = () => setN(n + 1);
+
+  return (
+    <>
+      <button onClick={() => setN(n + 1)}>Parent inc</button>
+      <Child onClick={handleClick} />
+    </>
+  );
+}`,
+    question: "Why does Child re-render every time the Parent inc button is clicked, despite React.memo?",
+    options: [
+      "React.memo does not work with function props",
+      "handleClick is a new function reference on every Parent render, so the prop changes",
+      "console.log inside Child forces a re-render",
+      "n + 1 causes a side effect that bypasses memoization"
+    ],
+    answer: 1,
+    explanation: "Every time <code>Parent</code> re-renders, <code>handleClick</code> is recreated as a new function object. <code>React.memo</code> does a shallow comparison — the new function reference is not equal to the previous one, so <code>Child</code> re-renders. Wrapping <code>handleClick</code> in <code>useCallback</code> with <code>[n]</code> as deps would stabilize the reference."
+  },
+
+  {
+    id: 187,
+    difficulty: 3,
+    lang: "react",
+    topic: "useCallback",
+    code: `function Parent() {
+  const [n, setN] = React.useState(0);
+
+  const inc = React.useCallback(() => {
+    setN(n => n + 1);
+  }, []);
+
+  return <Child onClick={inc} count={n} />;
+}`,
+    question: "Why is the empty dependency array safe here even though inc updates n?",
+    options: [
+      "useCallback with [] never re-creates the function, so it is always stale",
+      "The functional update form setN(n => n + 1) always receives the latest state, so the closure does not need to capture n",
+      "React automatically adds n to the deps when setN is used",
+      "Empty deps are never safe — this is a bug"
+    ],
+    answer: 1,
+    explanation: "The functional update form <code>setN(n => n + 1)</code> receives the <em>current</em> state at the time of the call, not the captured closure value. Because <code>inc</code> does not read <code>n</code> directly, the empty dep array is safe and the callback reference stays stable across renders."
+  },
+
+  {
+    id: 188,
+    difficulty: 3,
+    lang: "react",
+    topic: "useMemo",
+    code: `function App({ list }) {
+  const sorted = React.useMemo(
+    () => [...list].sort((a, b) => a - b),
+    [list]
+  );
+  return <ul>{sorted.map(n => <li key={n}>{n}</li>)}</ul>;
+}`,
+    question: "What is the primary benefit of useMemo here?",
+    options: [
+      "It prevents sorted from being garbage-collected",
+      "It ensures the sort runs asynchronously",
+      "It skips re-sorting when list has not changed between renders",
+      "It makes the component render in a separate thread"
+    ],
+    answer: 2,
+    explanation: "<code>useMemo</code> caches the result of an expensive computation and recomputes it only when its dependencies change. Here, the sort is skipped on re-renders where <code>list</code> is the same reference, saving work proportional to the list length."
+  },
+
+  {
+    id: 189,
+    difficulty: 3,
+    lang: "react",
+    topic: "useContext",
+    code: `const ThemeCtx = React.createContext("light");
+
+function App() {
+  return (
+    <ThemeCtx.Provider value="dark">
+      <Child />
+    </ThemeCtx.Provider>
+  );
+}
+
+function Child() {
+  const theme = React.useContext(ThemeCtx);
+  return <span>{theme}</span>;
+}`,
+    question: "What does Child render?",
+    options: ["light", "dark", "undefined", "ThemeCtx"],
+    answer: 1,
+    explanation: "<code>useContext</code> reads from the nearest matching <code>Provider</code> above in the tree. <code>App</code> provides <code>\"dark\"</code>, so <code>Child</code> receives and renders <code>\"dark\"</code>. The default value <code>\"light\"</code> is only used when there is no Provider ancestor."
+  },
+
+  {
+    id: 190,
+    difficulty: 3,
+    lang: "react",
+    topic: "Custom Hook",
+    code: `function useToggle(initial = false) {
+  const [on, setOn] = React.useState(initial);
+  const toggle = React.useCallback(() => setOn(v => !v), []);
+  return [on, toggle];
+}
+
+function App() {
+  const [isOpen, toggle] = useToggle();
+  return <button onClick={toggle}>{isOpen ? "Close" : "Open"}</button>;
+}`,
+    question: "What does the button display initially?",
+    options: ["Close", "Open", "false", "undefined"],
+    answer: 1,
+    explanation: "<code>useToggle()</code> is called with no argument, so <code>initial</code> defaults to <code>false</code>. <code>isOpen</code> starts as <code>false</code>, and the ternary renders <code>\"Open\"</code>."
+  },
+
+  {
+    id: 191,
+    difficulty: 3,
+    lang: "react",
+    topic: "useEffect Stale Closure",
+    code: `function Timer() {
+  const [n, setN] = React.useState(0);
+
+  React.useEffect(() => {
+    const id = setInterval(() => {
+      console.log(n);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  return <button onClick={() => setN(n + 1)}>{n}</button>;
+}`,
+    question: "After clicking the button 3 times, what does the interval log?",
+    options: ["3", "0", "1\n2\n3", "It varies each second"],
+    answer: 1,
+    explanation: "The effect captures <code>n</code> at mount time (<code>0</code>) and is never re-run because the dep array is empty. The interval closure holds a stale reference to <code>n === 0</code> forever. The fix is to add <code>n</code> to deps or use a ref to hold the latest value."
+  },
+
+  {
+    id: 192,
+    difficulty: 3,
+    lang: "react",
+    topic: "useEffect Cleanup",
+    code: `function App({ id }) {
+  React.useEffect(() => {
+    const controller = new AbortController();
+    fetch(\`/api/\${id}\`, { signal: controller.signal })
+      .then(r => r.json())
+      .then(data => console.log(data))
+      .catch(() => {});
+    return () => controller.abort();
+  }, [id]);
+  return <div>{id}</div>;
+}`,
+    question: "Why does the cleanup function call controller.abort()?",
+    options: [
+      "To cancel the fetch when the component unmounts or id changes before the previous fetch completes",
+      "To force the fetch to retry on the next render",
+      "To reset the id state to its initial value",
+      "AbortController.abort() is required before any new fetch call"
+    ],
+    answer: 0,
+    explanation: "When <code>id</code> changes, React runs the previous effect's cleanup before running the new effect. Calling <code>controller.abort()</code> cancels any in-flight fetch for the old <code>id</code>, preventing a race condition where a stale response could overwrite newer data."
+  },
+
+  {
+    id: 193,
+    difficulty: 3,
+    lang: "react",
+    topic: "Batched Updates",
+    code: `function App() {
+  const [a, setA] = React.useState(0);
+  const [b, setB] = React.useState(0);
+
+  function update() {
+    setA(1);
+    setB(2);
+  }
+
+  console.log("render");
+  return <button onClick={update}>{a} {b}</button>;
+}`,
+    question: "How many times does 'render' log when the button is clicked once (React 18)?",
+    options: ["0", "1", "2", "3"],
+    answer: 1,
+    explanation: "React 18 automatically batches all state updates within event handlers into a single re-render. Both <code>setA(1)</code> and <code>setB(2)</code> are processed together, producing one re-render and one <code>\"render\"</code> log."
+  },
+
+  {
+    id: 194,
+    difficulty: 3,
+    lang: "react",
+    topic: "Hook Rules",
+    code: null,
+    question: "Which of the following violates the Rules of Hooks?",
+    options: [
+      "Calling useState at the top level of a component",
+      "Calling useEffect inside an if statement conditionally",
+      "Calling a custom hook inside another custom hook",
+      "Calling useState multiple times in the same component"
+    ],
+    answer: 1,
+    explanation: "Hooks must be called in the same order on every render. Placing a hook inside an <code>if</code> statement can skip it on some renders, breaking React's internal call-order tracking. ESLint's <code>react-hooks/rules-of-hooks</code> plugin detects this."
+  },
+
+  {
+    id: 195,
+    difficulty: 3,
+    lang: "react",
+    topic: "Render vs Commit Phase",
+    code: null,
+    question: "Which of the following best describes the difference between the render phase and the commit phase in React?",
+    options: [
+      "The render phase writes to the DOM; the commit phase calls effects",
+      "The render phase is pure computation (calling component functions); the commit phase applies changes to the DOM and runs effects",
+      "The render phase runs in a Web Worker; the commit phase runs on the main thread",
+      "The render phase handles user events; the commit phase handles network events"
+    ],
+    answer: 1,
+    explanation: "During the <em>render phase</em>, React calls component functions and determines what changed — this must be pure and side-effect-free. During the <em>commit phase</em>, React applies those changes to the DOM and then runs <code>useLayoutEffect</code> and <code>useEffect</code> callbacks."
+  },
+
+  {
+    id: 196,
+    difficulty: 3,
+    lang: "react",
+    topic: "useContext Re-render",
+    code: `const Ctx = React.createContext(0);
+
+function Child() {
+  const val = React.useContext(Ctx);
+  console.log("Child rendered");
+  return <span>{val}</span>;
+}
+
+function Parent() {
+  const [n, setN] = React.useState(0);
+  return (
+    <Ctx.Provider value={n}>
+      <button onClick={() => setN(n + 1)}>inc</button>
+      <Child />
+    </Ctx.Provider>
+  );
+}`,
+    question: "What happens to Child when the button is clicked?",
+    options: [
+      "Child does not re-render because it is not a direct child of the button",
+      "Child re-renders because the context value changed",
+      "Child re-renders only if wrapped in React.memo",
+      "Child throws because context values must be strings"
+    ],
+    answer: 1,
+    explanation: "All components that call <code>useContext</code> re-render whenever the context <em>value</em> changes. Clicking the button updates <code>n</code>, which changes the Provider's <code>value</code>, which triggers a re-render of <code>Child</code> — regardless of <code>React.memo</code>."
+  },
+
+  {
+    id: 197,
+    difficulty: 3,
+    lang: "react",
+    topic: "Custom Hook Sharing",
+    code: null,
+    question: "Two components both call the same custom hook useFoo(). What is true about their state?",
+    options: [
+      "They share the same state instance, like a singleton",
+      "Each component gets its own independent state instance",
+      "State is shared only if both components are siblings in the tree",
+      "State is shared only if useFoo uses useContext internally"
+    ],
+    answer: 1,
+    explanation: "Custom hooks are just functions. Each call to <code>useFoo()</code> creates a new, independent closure with its own state. To share state between components, you need lifted state, Context, or an external store — not a shared custom hook."
+  },
+
+  {
+    id: 198,
+    difficulty: 3,
+    lang: "react",
+    topic: "useLayoutEffect",
+    code: `function App() {
+  React.useEffect(() => { console.log("effect"); });
+  React.useLayoutEffect(() => { console.log("layout"); });
+  return <div />;
+}`,
+    question: "In what order are the logs printed?",
+    options: ["effect\nlayout", "layout\neffect", "They run in parallel", "layout only — useEffect is skipped when useLayoutEffect is present"],
+    answer: 1,
+    explanation: "<code>useLayoutEffect</code> fires synchronously <em>after</em> DOM mutations but <em>before</em> the browser paints. <code>useEffect</code> fires after the paint. So the order is always: <code>layout</code> → <code>effect</code>."
+  },
+
+  {
+    id: 199,
+    difficulty: 3,
+    lang: "react",
+    topic: "Derived State Anti-pattern",
+    code: `function List({ items }) {
+  const [localItems, setLocalItems] = React.useState(items);
+
+  return (
+    <ul>
+      {localItems.map(i => <li key={i}>{i}</li>)}
+    </ul>
+  );
+}`,
+    question: "What problem does this pattern have?",
+    options: [
+      "useState cannot accept arrays as the initial value",
+      "If the parent re-renders with a new items prop, localItems will not update because useState ignores subsequent initial values",
+      "The component will re-render infinitely because localItems changes on every render",
+      "map is not allowed inside JSX"
+    ],
+    answer: 1,
+    explanation: "<code>useState(items)</code> uses <code>items</code> only for the <em>initial</em> state. If the parent passes a new <code>items</code> array later, <code>localItems</code> is stale. The fix is to use <code>items</code> directly from props (derived state), or add a <code>useEffect</code> to sync — though the former is preferred."
+  },
+
+  {
+    id: 200,
+    difficulty: 3,
+    lang: "react",
+    topic: "useReducer",
+    code: `function reducer(state, action) {
+  switch (action.type) {
+    case "inc": return { count: state.count + 1 };
+    case "dec": return { count: state.count - 1 };
+    default: return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = React.useReducer(reducer, { count: 10 });
+  return (
+    <>
+      <button onClick={() => dispatch({ type: "dec" })}>-</button>
+      <span>{state.count}</span>
+      <button onClick={() => dispatch({ type: "inc" })}>+</button>
+    </>
+  );
+}`,
+    question: "What does the span display after clicking '-' twice then '+' once?",
+    options: ["10", "9", "11", "8"],
+    answer: 1,
+    explanation: "Initial count is <code>10</code>. After two <code>dec</code> actions: <code>10 → 9 → 8</code>. After one <code>inc</code> action: <code>8 → 9</code>. The span displays <code>9</code>."
+  },
+
+  // ─── SQL ────────────────────────────────────────────────────────
+
+  {
+    id: 201,
+    difficulty: 1,
+    lang: "sql",
+    topic: "COUNT",
+    setup: `CREATE TABLE users (id INTEGER, name TEXT, age INTEGER);
+INSERT INTO users VALUES (1, 'Alice', 30);
+INSERT INTO users VALUES (2, 'Bob', 25);
+INSERT INTO users VALUES (3, 'Carol', 35);`,
+    code: `SELECT COUNT(*) FROM users;`,
+    question: "What does this query return?",
+    options: ["1", "2", "3", "0"],
+    answer: 2,
+    explanation: "<code>COUNT(*)</code> counts all rows regardless of NULL values. There are 3 rows in the table."
+  },
+
+  {
+    id: 202,
+    difficulty: 1,
+    lang: "sql",
+    topic: "SELECT + WHERE",
+    setup: `CREATE TABLE users (id INTEGER, name TEXT, age INTEGER);
+INSERT INTO users VALUES (1, 'Alice', 30);
+INSERT INTO users VALUES (2, 'Bob', 25);
+INSERT INTO users VALUES (3, 'Carol', 35);`,
+    code: `SELECT name, age FROM users WHERE id = 2;`,
+    question: "What does this query return?",
+    options: ["Alice|30", "Bob|25", "Carol|35", "2|Bob"],
+    answer: 1,
+    explanation: "<code>WHERE id = 2</code> filters to the single row for Bob. sqlite3 outputs columns pipe-separated: <code>Bob|25</code>."
+  },
+
+  {
+    id: 203,
+    difficulty: 1,
+    lang: "sql",
+    topic: "WHERE comparison",
+    setup: `CREATE TABLE products (id INTEGER, name TEXT, price REAL);
+INSERT INTO products VALUES (1, 'Apple', 0.99);
+INSERT INTO products VALUES (2, 'Banana', 0.49);
+INSERT INTO products VALUES (3, 'Cherry', 2.99);`,
+    code: `SELECT name FROM products WHERE price > 1.00;`,
+    question: "What does this query return?",
+    options: ["Apple", "Banana", "Cherry", "Apple\nCherry"],
+    answer: 2,
+    explanation: "Only Cherry (2.99) satisfies <code>price &gt; 1.00</code>. Apple (0.99) and Banana (0.49) are both below the threshold."
+  },
+
+  {
+    id: 204,
+    difficulty: 1,
+    lang: "sql",
+    topic: "ORDER BY",
+    setup: `CREATE TABLE employees (id INTEGER, name TEXT, salary INTEGER);
+INSERT INTO employees VALUES (1, 'Dan', 70000);
+INSERT INTO employees VALUES (2, 'Eve', 50000);
+INSERT INTO employees VALUES (3, 'Frank', 90000);`,
+    code: `SELECT name FROM employees ORDER BY salary ASC;`,
+    question: "What does this query return?",
+    options: ["Dan\nEve\nFrank", "Eve\nDan\nFrank", "Frank\nDan\nEve", "Eve\nFrank\nDan"],
+    answer: 1,
+    explanation: "<code>ORDER BY salary ASC</code> sorts lowest to highest: Eve (50k) → Dan (70k) → Frank (90k)."
+  },
+
+  {
+    id: 205,
+    difficulty: 1,
+    lang: "sql",
+    topic: "ORDER BY + LIMIT",
+    setup: `CREATE TABLE employees (id INTEGER, name TEXT, salary INTEGER);
+INSERT INTO employees VALUES (1, 'Dan', 70000);
+INSERT INTO employees VALUES (2, 'Eve', 50000);
+INSERT INTO employees VALUES (3, 'Frank', 90000);`,
+    code: `SELECT name FROM employees ORDER BY salary DESC LIMIT 1;`,
+    question: "What does this query return?",
+    options: ["Dan", "Eve", "Frank", "Dan\nFrank"],
+    answer: 2,
+    explanation: "<code>ORDER BY salary DESC</code> puts Frank (90k) first; <code>LIMIT 1</code> returns only that top row."
+  },
+
+  {
+    id: 206,
+    difficulty: 1,
+    lang: "sql",
+    topic: "DISTINCT",
+    setup: `CREATE TABLE orders (id INTEGER, customer TEXT);
+INSERT INTO orders VALUES (1, 'Alice');
+INSERT INTO orders VALUES (2, 'Bob');
+INSERT INTO orders VALUES (3, 'Alice');
+INSERT INTO orders VALUES (4, 'Carol');`,
+    code: `SELECT COUNT(DISTINCT customer) FROM orders;`,
+    question: "What does this query return?",
+    options: ["4", "2", "3", "1"],
+    answer: 2,
+    explanation: "<code>COUNT(DISTINCT customer)</code> counts unique names. Alice appears twice but is counted once. Three distinct customers → <code>3</code>."
+  },
+
+  {
+    id: 207,
+    difficulty: 1,
+    lang: "sql",
+    topic: "SELECT *",
+    setup: `CREATE TABLE colors (id INTEGER, name TEXT);
+INSERT INTO colors VALUES (1, 'Red');
+INSERT INTO colors VALUES (2, 'Green');
+INSERT INTO colors VALUES (3, 'Blue');`,
+    code: `SELECT * FROM colors WHERE id = 3;`,
+    question: "What does this query return?",
+    options: ["Blue", "3|Blue", "3", "id|name"],
+    answer: 1,
+    explanation: "<code>SELECT *</code> returns all columns. sqlite3 outputs them pipe-separated with no headers in default mode: <code>3|Blue</code>."
+  },
+
+  {
+    id: 208,
+    difficulty: 1,
+    lang: "sql",
+    topic: "IS NULL",
+    setup: `CREATE TABLE contacts (id INTEGER, name TEXT, phone TEXT);
+INSERT INTO contacts VALUES (1, 'Alice', '555-1234');
+INSERT INTO contacts VALUES (2, 'Bob', NULL);
+INSERT INTO contacts VALUES (3, 'Carol', '555-5678');`,
+    code: `SELECT name FROM contacts WHERE phone IS NULL;`,
+    question: "What does this query return?",
+    options: ["Alice", "Bob", "Carol", "NULL"],
+    answer: 1,
+    explanation: "<code>IS NULL</code> is the correct test for NULL — <code>= NULL</code> always evaluates to unknown. Only Bob has a NULL phone number."
+  },
+
+  {
+    id: 209,
+    difficulty: 2,
+    lang: "sql",
+    topic: "INNER JOIN",
+    setup: `CREATE TABLE customers (id INTEGER, name TEXT);
+INSERT INTO customers VALUES (1, 'Alice');
+INSERT INTO customers VALUES (2, 'Bob');
+CREATE TABLE orders (id INTEGER, customer_id INTEGER, amount INTEGER);
+INSERT INTO orders VALUES (1, 1, 100);
+INSERT INTO orders VALUES (2, 1, 200);`,
+    code: `SELECT customers.name, orders.amount
+FROM customers
+INNER JOIN orders ON customers.id = orders.customer_id;`,
+    question: "What does this query return?",
+    options: ["Alice|100\nAlice|200", "Alice|100\nBob|200", "Alice|100", "Alice|100\nAlice|200\nBob|"],
+    answer: 0,
+    explanation: "<code>INNER JOIN</code> returns only matched rows. Bob has no orders so he is excluded. Alice has two orders, producing <code>Alice|100</code> and <code>Alice|200</code>."
+  },
+
+  {
+    id: 210,
+    difficulty: 2,
+    lang: "sql",
+    topic: "LEFT JOIN",
+    setup: `CREATE TABLE customers (id INTEGER, name TEXT);
+INSERT INTO customers VALUES (1, 'Alice');
+INSERT INTO customers VALUES (2, 'Bob');
+CREATE TABLE orders (id INTEGER, customer_id INTEGER, amount INTEGER);
+INSERT INTO orders VALUES (1, 1, 100);`,
+    code: `SELECT COUNT(*) FROM customers LEFT JOIN orders ON customers.id = orders.customer_id;`,
+    question: "What does this query return?",
+    options: ["1", "2", "3", "0"],
+    answer: 1,
+    explanation: "<code>LEFT JOIN</code> keeps all left-table rows. Alice matches one order; Bob has no orders (1 row with NULLs). <code>COUNT(*)</code> counts both rows = <code>2</code>."
+  },
+
+  {
+    id: 211,
+    difficulty: 2,
+    lang: "sql",
+    topic: "GROUP BY + COUNT",
+    setup: `CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER);
+INSERT INTO orders VALUES (1, 'Alice', 50);
+INSERT INTO orders VALUES (2, 'Bob', 75);
+INSERT INTO orders VALUES (3, 'Alice', 100);`,
+    code: `SELECT customer, COUNT(*) FROM orders GROUP BY customer ORDER BY customer;`,
+    question: "What does this query return?",
+    options: ["Alice|1\nBob|1", "Alice|2\nBob|1", "Alice|1\nBob|2", "Alice|2\nBob|2"],
+    answer: 1,
+    explanation: "Alice appears in 2 rows, Bob in 1. Ordered alphabetically: <code>Alice|2</code> then <code>Bob|1</code>."
+  },
+
+  {
+    id: 212,
+    difficulty: 2,
+    lang: "sql",
+    topic: "HAVING",
+    setup: `CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER);
+INSERT INTO orders VALUES (1, 'Alice', 50);
+INSERT INTO orders VALUES (2, 'Bob', 75);
+INSERT INTO orders VALUES (3, 'Alice', 100);`,
+    code: `SELECT customer, COUNT(*) FROM orders GROUP BY customer HAVING COUNT(*) > 1;`,
+    question: "What does this query return?",
+    options: ["Bob|1", "Alice|2\nBob|1", "Alice|2", "No rows"],
+    answer: 2,
+    explanation: "<code>HAVING</code> filters groups after aggregation. Alice has 2 orders (passes); Bob has only 1 (excluded). Result: <code>Alice|2</code>."
+  },
+
+  {
+    id: 213,
+    difficulty: 2,
+    lang: "sql",
+    topic: "AVG",
+    setup: `CREATE TABLE scores (id INTEGER, student TEXT, score INTEGER);
+INSERT INTO scores VALUES (1, 'Alice', 80);
+INSERT INTO scores VALUES (2, 'Bob', 90);
+INSERT INTO scores VALUES (3, 'Carol', 70);`,
+    code: `SELECT AVG(score) FROM scores;`,
+    question: "What does this query return?",
+    options: ["80", "80.0", "240", "70"],
+    answer: 1,
+    explanation: "(80+90+70)/3 = 80.0. SQLite returns <code>AVG</code> as floating-point, so the output is <code>80.0</code>, not the integer <code>80</code>."
+  },
+
+  {
+    id: 214,
+    difficulty: 2,
+    lang: "sql",
+    topic: "SUM with expression",
+    setup: `CREATE TABLE items (id INTEGER, name TEXT, qty INTEGER, price REAL);
+INSERT INTO items VALUES (1, 'Pen', 3, 1.5);
+INSERT INTO items VALUES (2, 'Notebook', 2, 4.0);
+INSERT INTO items VALUES (3, 'Eraser', 5, 0.5);`,
+    code: `SELECT SUM(qty * price) FROM items;`,
+    question: "What does this query return?",
+    options: ["13.0", "14.5", "15.0", "16.5"],
+    answer: 2,
+    explanation: "Pen: 3×1.5=4.5, Notebook: 2×4.0=8.0, Eraser: 5×0.5=2.5. Sum = <code>15.0</code>."
+  },
+
+  {
+    id: 215,
+    difficulty: 2,
+    lang: "sql",
+    topic: "Subquery in WHERE",
+    setup: `CREATE TABLE employees (id INTEGER, name TEXT, salary INTEGER);
+INSERT INTO employees VALUES (1, 'Alice', 80000);
+INSERT INTO employees VALUES (2, 'Bob', 60000);
+INSERT INTO employees VALUES (3, 'Carol', 75000);`,
+    code: `SELECT name FROM employees
+WHERE salary > (SELECT AVG(salary) FROM employees)
+ORDER BY name;`,
+    question: "What does this query return?",
+    options: ["Alice", "Alice\nCarol", "Bob", "Alice\nBob\nCarol"],
+    answer: 1,
+    explanation: "AVG = (80000+60000+75000)/3 ≈ 71667. Alice (80k) and Carol (75k) are above average; Bob (60k) is not."
+  },
+
+  {
+    id: 216,
+    difficulty: 2,
+    lang: "sql",
+    topic: "LIKE",
+    setup: `CREATE TABLE products (id INTEGER, name TEXT);
+INSERT INTO products VALUES (1, 'Apple Juice');
+INSERT INTO products VALUES (2, 'Orange Juice');
+INSERT INTO products VALUES (3, 'Apple Cider');`,
+    code: `SELECT COUNT(*) FROM products WHERE name LIKE 'Apple%';`,
+    question: "What does this query return?",
+    options: ["1", "2", "3", "0"],
+    answer: 1,
+    explanation: "<code>LIKE 'Apple%'</code> matches any string starting with 'Apple'. Both 'Apple Juice' and 'Apple Cider' match → <code>2</code>."
+  },
+
+  {
+    id: 217,
+    difficulty: 2,
+    lang: "sql",
+    topic: "COALESCE",
+    setup: `CREATE TABLE users (id INTEGER, name TEXT, nickname TEXT);
+INSERT INTO users VALUES (1, 'Alice', 'Ali');
+INSERT INTO users VALUES (2, 'Bob', NULL);
+INSERT INTO users VALUES (3, 'Carol', NULL);`,
+    code: `SELECT COALESCE(nickname, name) FROM users ORDER BY id;`,
+    question: "What does this query return?",
+    options: ["Ali\nNULL\nNULL", "Ali\nBob\nCarol", "Alice\nBob\nCarol", "Ali\n\n"],
+    answer: 1,
+    explanation: "<code>COALESCE</code> returns the first non-NULL argument. Alice has nickname 'Ali'; Bob and Carol fall back to <code>name</code>."
+  },
+
+  {
+    id: 218,
+    difficulty: 2,
+    lang: "sql",
+    topic: "BETWEEN",
+    setup: `CREATE TABLE products (id INTEGER, name TEXT, price REAL);
+INSERT INTO products VALUES (1, 'Apple', 0.99);
+INSERT INTO products VALUES (2, 'Banana', 1.5);
+INSERT INTO products VALUES (3, 'Cherry', 2.99);
+INSERT INTO products VALUES (4, 'Date', 4.5);`,
+    code: `SELECT COUNT(*) FROM products WHERE price BETWEEN 1.00 AND 3.00;`,
+    question: "What does this query return?",
+    options: ["1", "2", "3", "4"],
+    answer: 1,
+    explanation: "<code>BETWEEN</code> is inclusive. Banana (1.5) and Cherry (2.99) fall in range; Apple (0.99) and Date (4.5) do not → <code>2</code>."
+  },
+
+  {
+    id: 219,
+    difficulty: 2,
+    lang: "sql",
+    topic: "NULL in aggregates",
+    setup: null,
+    code: null,
+    question: "Which of the following is true about NULL values in SQL aggregate functions?",
+    options: [
+      "COUNT(*) and COUNT(col) both skip NULL values",
+      "AVG(col) treats NULL as zero when computing the average",
+      "COUNT(*) counts all rows; COUNT(col) ignores rows where col is NULL",
+      "SUM(col) returns 0 if all values are NULL"
+    ],
+    answer: 2,
+    explanation: "<code>COUNT(*)</code> counts every row. <code>COUNT(col)</code> only counts non-NULL values. <code>AVG</code> and <code>SUM</code> also ignore NULLs — they never treat NULL as zero."
+  },
+
+  {
+    id: 220,
+    difficulty: 3,
+    lang: "sql",
+    topic: "Multiple JOINs",
+    setup: `CREATE TABLE students (id INTEGER, name TEXT);
+INSERT INTO students VALUES (1, 'Alice');
+INSERT INTO students VALUES (2, 'Bob');
+CREATE TABLE courses (id INTEGER, title TEXT);
+INSERT INTO courses VALUES (1, 'Math');
+INSERT INTO courses VALUES (2, 'Science');
+CREATE TABLE enrollments (student_id INTEGER, course_id INTEGER);
+INSERT INTO enrollments VALUES (1, 1);
+INSERT INTO enrollments VALUES (1, 2);
+INSERT INTO enrollments VALUES (2, 1);`,
+    code: `SELECT students.name, courses.title
+FROM students
+INNER JOIN enrollments ON students.id = enrollments.student_id
+INNER JOIN courses ON enrollments.course_id = courses.id
+ORDER BY students.name, courses.title;`,
+    question: "What does this query return?",
+    options: [
+      "Alice|Math\nAlice|Science\nBob|Math",
+      "Alice|Math\nBob|Math",
+      "Alice|Math\nAlice|Science",
+      "Alice|Math\nAlice|Science\nBob|Math\nBob|Science"
+    ],
+    answer: 0,
+    explanation: "Chained INNER JOINs link students → enrollments → courses. Alice enrolled in Math and Science; Bob only in Math. Ordered alphabetically: 3 rows."
+  },
+
+  {
+    id: 221,
+    difficulty: 3,
+    lang: "sql",
+    topic: "Self JOIN",
+    setup: `CREATE TABLE employees (id INTEGER, name TEXT, manager_id INTEGER);
+INSERT INTO employees VALUES (1, 'Alice', NULL);
+INSERT INTO employees VALUES (2, 'Bob', 1);
+INSERT INTO employees VALUES (3, 'Carol', 1);`,
+    code: `SELECT e.name, m.name
+FROM employees e
+INNER JOIN employees m ON e.manager_id = m.id
+ORDER BY e.name;`,
+    question: "What does this query return?",
+    options: [
+      "Alice|\nBob|Alice\nCarol|Alice",
+      "Bob|Alice\nCarol|Alice",
+      "Alice|NULL\nBob|Alice\nCarol|Alice",
+      "Bob|Alice"
+    ],
+    answer: 1,
+    explanation: "A self join matches each employee to their manager. Alice has <code>manager_id = NULL</code> — excluded by INNER JOIN. Bob and Carol both report to Alice."
+  },
+
+  {
+    id: 222,
+    difficulty: 3,
+    lang: "sql",
+    topic: "Correlated subquery",
+    setup: `CREATE TABLE products (id INTEGER, name TEXT, category TEXT, price REAL);
+INSERT INTO products VALUES (1, 'Apple', 'Fruit', 1.0);
+INSERT INTO products VALUES (2, 'Banana', 'Fruit', 0.5);
+INSERT INTO products VALUES (3, 'Carrot', 'Veggie', 0.8);
+INSERT INTO products VALUES (4, 'Daikon', 'Veggie', 1.2);`,
+    code: `SELECT name FROM products p
+WHERE price = (SELECT MAX(price) FROM products WHERE category = p.category)
+ORDER BY name;`,
+    question: "What does this query return?",
+    options: ["Apple\nDaikon", "Apple\nCarrot", "Daikon", "Apple"],
+    answer: 0,
+    explanation: "The correlated subquery computes the max price per category for each outer row. Apple is the priciest Fruit (1.0); Daikon is the priciest Veggie (1.2). Both match."
+  },
+
+  {
+    id: 223,
+    difficulty: 3,
+    lang: "sql",
+    topic: "ROW_NUMBER",
+    setup: `CREATE TABLE scores (id INTEGER, name TEXT, score INTEGER);
+INSERT INTO scores VALUES (1, 'Alice', 90);
+INSERT INTO scores VALUES (2, 'Bob', 75);
+INSERT INTO scores VALUES (3, 'Carol', 85);`,
+    code: `SELECT name, ROW_NUMBER() OVER (ORDER BY score DESC) AS rn
+FROM scores;`,
+    question: "What does this query return?",
+    options: [
+      "Alice|1\nCarol|2\nBob|3",
+      "Alice|1\nBob|2\nCarol|3",
+      "Bob|1\nCarol|2\nAlice|3",
+      "Alice|3\nCarol|2\nBob|1"
+    ],
+    answer: 0,
+    explanation: "<code>ROW_NUMBER() OVER (ORDER BY score DESC)</code> ranks from highest score. Alice (90)→1, Carol (85)→2, Bob (75)→3."
+  },
+
+  {
+    id: 224,
+    difficulty: 3,
+    lang: "sql",
+    topic: "CTE",
+    setup: `CREATE TABLE orders (id INTEGER, customer TEXT, amount INTEGER);
+INSERT INTO orders VALUES (1, 'Alice', 100);
+INSERT INTO orders VALUES (2, 'Bob', 200);
+INSERT INTO orders VALUES (3, 'Alice', 150);`,
+    code: `WITH totals AS (
+  SELECT customer, SUM(amount) AS total FROM orders GROUP BY customer
+)
+SELECT customer, total FROM totals WHERE total > 200 ORDER BY customer;`,
+    question: "What does this query return?",
+    options: ["Alice|250\nBob|200", "Alice|250", "Bob|200", "No rows"],
+    answer: 1,
+    explanation: "The CTE computes totals: Alice=250, Bob=200. The outer query filters <code>total &gt; 200</code> (strict). Only Alice (250) qualifies — Bob's 200 does not satisfy the strict greater-than."
+  },
+
+  {
+    id: 225,
+    difficulty: 3,
+    lang: "sql",
+    topic: "UNION vs UNION ALL",
+    setup: null,
+    code: null,
+    question: "Which of the following is true about UNION vs UNION ALL in SQL?",
+    options: [
+      "UNION ALL removes duplicate rows; UNION keeps them",
+      "UNION deduplicates rows; UNION ALL keeps all rows including duplicates",
+      "Both UNION and UNION ALL sort the result set automatically",
+      "UNION ALL is slower than UNION because it does extra work"
+    ],
+    answer: 1,
+    explanation: "<code>UNION</code> performs an implicit deduplication step, adding overhead. <code>UNION ALL</code> concatenates results as-is, keeping duplicates, and is generally faster. Neither guarantees ordering without an explicit <code>ORDER BY</code>."
+  },
+
 ];
 

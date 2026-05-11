@@ -164,6 +164,18 @@
     .badge-2 { background: #3D2200; color: #F0883E; }
     .badge-3 { background: #4A0D0C; color: #F85149; }
 
+    .lang-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 3px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .lang-go    { background: #0A1E2E; color: #00ADD8; }
+    .lang-react { background: #0A1E28; color: #61DAFB; }
+    .lang-sql   { background: #1E1200; color: #F89820; }
+
     .card-question {
       padding: 16px 18px 4px;
       font-size: 0.9rem;
@@ -414,7 +426,10 @@
 
         <div class="card" id="card">
           <div class="card-meta">
-            <span class="topic">${esc(q.topic)}</span>
+            <div style="display:flex;align-items:center;gap:8px">
+              <span class="lang-badge lang-${q.lang || 'go'}">${(q.lang || 'go').toUpperCase()}</span>
+              <span class="topic">${esc(q.topic)}</span>
+            </div>
             <div style="display:flex;align-items:center;gap:8px">
               ${playgroundUrl(q.id)}
               <span class="badge badge-${q.difficulty}">${badge(q.difficulty)}</span>
