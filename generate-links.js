@@ -1,35 +1,34 @@
 #!/usr/bin/env node
-// Posts each code question to the Go Playground share API and writes
-// the resulting stable URLs to links.js.
+// Generates runnable REPL links for every code question and writes links.js.
+//   Go    → play.golang.org/share  → go.dev/play/p/{hash}
+//   React → codesandbox.io define API → codesandbox.io/s/{id}
+//   SQL   → static sqliteonline.com URL (code copied via clipboard in UI)
 // Run: node generate-links.js
 
-const fs   = require('fs');
+const fs    = require('fs');
 const https = require('https');
 const path  = require('path');
 
 const src = fs.readFileSync(path.join(__dirname, 'questions.js'), 'utf-8');
 const QUESTIONS = new Function(src + '; return QUESTIONS;')();
 
-function share(code) {
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// ── Go Playground ─────────────────────────────────────────────────────────────
+function shareGo(code) {
   return new Promise((resolve, reject) => {
     const body = Buffer.from(code, 'utf-8');
     const req = https.request({
       hostname: 'play.golang.org',
       path: '/share',
       method: 'POST',
-      headers: {
-        'Content-Type': 'text/plain',
-        'Content-Length': body.length,
-      },
+      headers: { 'Content-Type': 'text/plain', 'Content-Length': body.length },
     }, res => {
       let data = '';
-      res.on('data', chunk => data += chunk);
+      res.on('data', c => data += c);
       res.on('end', () => {
-        if (res.statusCode === 200) {
-          resolve(`https://go.dev/play/p/${data.trim()}?v=gotip`);
-        } else {
-          reject(new Error(`HTTP ${res.statusCode}: ${data.slice(0, 120)}`));
-        }
+        if (res.statusCode === 200) resolve(`https://go.dev/play/p/${data.trim()}?v=gotip`);
+        else reject(new Error(`HTTP ${res.statusCode}`));
       });
     });
     req.on('error', reject);
@@ -38,36 +37,103 @@ function share(code) {
   });
 }
 
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
+// ── CodeSandbox (React) ───────────────────────────────────────────────────────
+function componentName(code) {
+  const m = code.match(/^function\s+([A-Z][A-Za-z0-9]*)\s*\(/m)
+         || code.match(/^const\s+([A-Z][A-Za-z0-9]*)\s*=/m);
+  return m ? m[1] : 'App';
 }
 
-async function main() {
-  const codeQuestions = QUESTIONS.filter(q => q.code);
-  console.log(`Generating playground links for ${codeQuestions.length} questions...`);
+function buildReactFiles(code) {
+  const name = componentName(code);
+  const appJs = `import React from 'react';\n\n${code}\n\nexport default ${name};\n`;
+  const indexJs = [
+    `import React from 'react';`,
+    `import ReactDOM from 'react-dom/client';`,
+    `import App from './App';`,
+    `ReactDOM.createRoot(document.getElementById('root')).render(<App />);`,
+  ].join('\n') + '\n';
+  return {
+    'package.json': { content: JSON.stringify({ dependencies: { react: '18.2.0', 'react-dom': '18.2.0' } }) },
+    'public/index.html': { content: '<!DOCTYPE html><html><body><div id="root"></div></body></html>' },
+    'src/App.js':    { content: appJs },
+    'src/index.js':  { content: indexJs },
+  };
+}
 
-  const links = {};
+function shareReact(code) {
+  return new Promise((resolve, reject) => {
+    const payload = Buffer.from(JSON.stringify({ files: buildReactFiles(code) }));
+    const req = https.request({
+      hostname: 'codesandbox.io',
+      path: '/api/v1/sandboxes/define?json=1',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': payload.length,
+      },
+    }, res => {
+      let data = '';
+      res.on('data', c => data += c);
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(data);
+          if (json.sandbox_id) resolve(`https://codesandbox.io/s/${json.sandbox_id}`);
+          else reject(new Error(`No sandbox_id: ${data.slice(0, 120)}`));
+        } catch (e) { reject(e); }
+      });
+    });
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+}
+
+// ── SQL ───────────────────────────────────────────────────────────────────────
+// SQLiteOnline doesn't have a public URL-encoding API, so we link to the tool
+// and rely on the clipboard copy button in the UI to paste the code.
+function sqlLink() {
+  return 'https://sqliteonline.com/';
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+async function main() {
+  // Load existing links so we only regenerate what's missing
+  let existing = {};
+  try { existing = new Function(fs.readFileSync(path.join(__dirname, 'links.js'), 'utf-8') + '; return PLAYGROUND_LINKS;')(); }
+  catch {}
+
+  const links = { ...existing };
   let ok = 0, fail = 0;
 
-  for (const q of codeQuestions) {
+  const todo = QUESTIONS.filter(q => q.code && !links[q.id]);
+  console.log(`Generating links for ${todo.length} new questions (${Object.keys(existing).length} already cached)...`);
+
+  for (const q of todo) {
+    const lang = q.lang || 'go';
     try {
-      const url = await share(q.code);
+      let url;
+      if (lang === 'go') {
+        url = await shareGo(q.code);
+        await sleep(250);
+      } else if (lang === 'react') {
+        url = await shareReact(q.code);
+        await sleep(500);
+      } else if (lang === 'sql') {
+        url = sqlLink();
+      }
       links[q.id] = url;
-      process.stdout.write(`✅ Q${q.id} ${url}\n`);
+      process.stdout.write(`✅ Q${q.id} [${lang}] ${url}\n`);
       ok++;
     } catch (e) {
-      process.stdout.write(`❌ Q${q.id} ${e.message}\n`);
+      process.stdout.write(`❌ Q${q.id} [${lang}] ${e.message}\n`);
       fail++;
     }
-    await sleep(250);
   }
 
-  const out = `// Auto-generated by generate-links.js — do not edit manually.
-// Re-run: node generate-links.js
-const PLAYGROUND_LINKS = ${JSON.stringify(links, null, 2)};
-`;
+  const out = `// Auto-generated by generate-links.js — do not edit manually.\n// Re-run: node generate-links.js\nconst PLAYGROUND_LINKS = ${JSON.stringify(links, null, 2)};\n`;
   fs.writeFileSync(path.join(__dirname, 'links.js'), out);
-  console.log(`\n${ok} links written to links.js${fail ? `, ${fail} failed` : ''}`);
+  console.log(`\n${ok} new links written${fail ? `, ${fail} failed` : ''}. Total: ${Object.keys(links).length}`);
 }
 
 main();

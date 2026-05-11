@@ -346,10 +346,40 @@
   let lives, score, idx, answered, queue;
 
   // ── Helpers ───────────────────────────────────────────────────────
-  function playgroundUrl(id) {
-    const url = (typeof PLAYGROUND_LINKS !== 'undefined') && PLAYGROUND_LINKS[id];
-    if (!url) return '';
-    return `<a class="playground-link" href="${url}" target="_blank" rel="noopener">▶ Run in Playground</a>`;
+  // Copy question code to clipboard (for React/SQL questions where the REPL
+  // opens blank — user pastes the copied code directly in)
+  function copyQuestionCode(id) {
+    const q = QUESTIONS.find(q => q.id === id);
+    if (!q || !q.code) return;
+    const lang = q.lang || 'go';
+    const text = lang === 'sql'
+      ? (q.setup ? q.setup + '\n\n' : '') + q.code
+      : q.code;
+    navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  function replLink(q) {
+    const lang = q.lang || 'go';
+
+    if (lang === 'go') {
+      const url = (typeof PLAYGROUND_LINKS !== 'undefined') && PLAYGROUND_LINKS[q.id];
+      if (!url) return '';
+      return `<a class="playground-link" href="${url}" target="_blank" rel="noopener">▶ Playground</a>`;
+    }
+
+    if (lang === 'react') {
+      if (!q.code) return '';
+      return `<a class="playground-link" href="https://playcode.io/react" target="_blank" rel="noopener"
+        onclick="copyQuestionCode(${q.id})" title="Code copied to clipboard — paste it in the REPL">▶ REPL <span style="font-size:0.65rem;opacity:0.7">(copies code)</span></a>`;
+    }
+
+    if (lang === 'sql') {
+      if (!q.code) return '';
+      return `<a class="playground-link" href="https://sqliteonline.com/" target="_blank" rel="noopener"
+        onclick="copyQuestionCode(${q.id})" title="SQL copied to clipboard — paste it in SQLiteOnline">▶ REPL <span style="font-size:0.65rem;opacity:0.7">(copies SQL)</span></a>`;
+    }
+
+    return '';
   }
 
   function esc(s) {
@@ -431,7 +461,7 @@
               <span class="topic">${esc(q.topic)}</span>
             </div>
             <div style="display:flex;align-items:center;gap:8px">
-              ${playgroundUrl(q.id)}
+              ${replLink(q)}
               <span class="badge badge-${q.difficulty}">${badge(q.difficulty)}</span>
             </div>
           </div>
