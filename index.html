@@ -476,23 +476,11 @@
             <span>3 difficulty tiers</span>
           </div>
           <div class="start-rule">
-            <span class="start-rule-icon">🔄</span>
-            <span>Correct answers rest 7 → 30 → 90 days</span>
+            <span class="start-rule-icon">⌨️</span>
+            <span>Keys 1 – 4</span>
           </div>
         </div>
         <button class="btn btn-primary" onclick="startGame()">Start Rush</button>
-      </div>
-    `;
-  }
-
-  function showPoolEmpty() {
-    const next = nextAvailableIn();
-    document.getElementById('app').innerHTML = `
-      <div class="gameover">
-        <div class="gameover-icon">🧠</div>
-        <h2>Pool cleared!</h2>
-        <p class="gameover-sub">You've answered every fresh question correctly.${next ? `<br>Next questions available in <strong>${next}</strong>.` : ''}</p>
-        <button class="btn btn-primary" onclick="showStart()" style="margin-top:32px">Back</button>
       </div>
     `;
   }
@@ -546,13 +534,13 @@
   }
 
   function showGameOver() {
-    const poolCleared = idx >= queue.length && lives > 0;
+    const cleared = idx >= queue.length && lives > 0;
     document.getElementById('app').innerHTML = `
       <div class="gameover">
-        <div class="gameover-icon">${poolCleared ? '🎉' : '💀'}</div>
-        <h2>${poolCleared ? "Today's pool cleared!" : 'Game Over'}</h2>
-        <p class="gameover-sub">${poolCleared
-          ? 'Every fresh question answered — come back tomorrow for more.'
+        <div class="gameover-icon">${cleared ? '🎉' : '💀'}</div>
+        <h2>${cleared ? 'You cleared it!' : 'Game Over'}</h2>
+        <p class="gameover-sub">${cleared
+          ? 'Every question answered correctly.'
           : `${3 - lives} mistake${3 - lives !== 1 ? 's' : ''} ended your run.`
         }</p>
         <div class="stats">
@@ -577,12 +565,13 @@
   // ── Game Logic ────────────────────────────────────────────────────
   function startGame() {
     lives = 3; score = 0; idx = 0; answered = false;
+    // Use fresh questions; silently backfill from cooldown if pool is exhausted
     const pool = freshPool();
-    if (pool.length === 0) { showPoolEmpty(); return; }
+    const source = pool.length > 0 ? pool : QUESTIONS;
     queue = [
-      ...shuffle(pool.filter(q => q.difficulty === 1)),
-      ...shuffle(pool.filter(q => q.difficulty === 2)),
-      ...shuffle(pool.filter(q => q.difficulty === 3)),
+      ...shuffle(source.filter(q => q.difficulty === 1)),
+      ...shuffle(source.filter(q => q.difficulty === 2)),
+      ...shuffle(source.filter(q => q.difficulty === 3)),
     ];
     showGame();
   }
