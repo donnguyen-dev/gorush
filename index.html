@@ -407,13 +407,60 @@
     return ['', 'Easy', 'Medium', 'Hard'][d];
   }
 
+  // ── SRS (Spaced Repetition) ───────────────────────────────────────
+  const SRS_KEY = 'devfathom_srs';
+
+  function loadSRS() {
+    try { return JSON.parse(localStorage.getItem(SRS_KEY) || '{}'); }
+    catch { return {}; }
+  }
+
+  function saveSRS(data) {
+    try { localStorage.setItem(SRS_KEY, JSON.stringify(data)); } catch {}
+  }
+
+  function recordAnswer(id, correct) {
+    const srs = loadSRS();
+    const entry = srs[id] || { streak: 0, nextSeen: 0 };
+    if (correct) {
+      entry.streak = (entry.streak || 0) + 1;
+      const days = entry.streak === 1 ? 7 : entry.streak === 2 ? 30 : 90;
+      entry.nextSeen = Date.now() + days * 86_400_000;
+    } else {
+      entry.streak = 0;
+      entry.nextSeen = 0;
+    }
+    srs[id] = entry;
+    saveSRS(srs);
+  }
+
+  function freshPool() {
+    const srs = loadSRS();
+    const now = Date.now();
+    return QUESTIONS.filter(q => {
+      const e = srs[q.id];
+      return !e || now >= e.nextSeen;
+    });
+  }
+
+  function nextAvailableIn() {
+    const srs = loadSRS();
+    const now = Date.now();
+    let earliest = Infinity;
+    for (const e of Object.values(srs)) {
+      if (e.nextSeen > now && e.nextSeen < earliest) earliest = e.nextSeen;
+    }
+    if (earliest === Infinity) return null;
+    const h = Math.ceil((earliest - now) / 3_600_000);
+    return h < 24 ? `${h}h` : `${Math.ceil(h / 24)}d`;
+  }
+
   // ── Screens ───────────────────────────────────────────────────────
   function showStart() {
     document.getElementById('app').innerHTML = `
       <div class="start">
         <div class="start-logo">
-          <span class="gopher">🐹</span>
-          <h1>GoRush</h1>
+          <h1>DevFathom</h1>
         </div>
         <p class="start-tagline">
           Read the code. Pick the output.<br>
@@ -429,11 +476,23 @@
             <span>3 difficulty tiers</span>
           </div>
           <div class="start-rule">
-            <span class="start-rule-icon">⌨️</span>
-            <span>Keys 1 – 4</span>
+            <span class="start-rule-icon">🔄</span>
+            <span>Correct answers rest 7 → 30 → 90 days</span>
           </div>
         </div>
         <button class="btn btn-primary" onclick="startGame()">Start Rush</button>
+      </div>
+    `;
+  }
+
+  function showPoolEmpty() {
+    const next = nextAvailableIn();
+    document.getElementById('app').innerHTML = `
+      <div class="gameover">
+        <div class="gameover-icon">🧠</div>
+        <h2>Pool cleared!</h2>
+        <p class="gameover-sub">You've answered every fresh question correctly.${next ? `<br>Next questions available in <strong>${next}</strong>.` : ''}</p>
+        <button class="btn btn-primary" onclick="showStart()" style="margin-top:32px">Back</button>
       </div>
     `;
   }
@@ -487,12 +546,15 @@
   }
 
   function showGameOver() {
-    const cleared = idx >= queue.length;
+    const poolCleared = idx >= queue.length && lives > 0;
     document.getElementById('app').innerHTML = `
       <div class="gameover">
-        <div class="gameover-icon">${cleared ? '🎉' : '💀'}</div>
-        <h2>${cleared ? 'You cleared it!' : 'Game Over'}</h2>
-        <p class="gameover-sub">${cleared ? 'Every question answered correctly.' : `${3 - lives} mistake${3 - lives !== 1 ? 's' : ''} ended your run.`}</p>
+        <div class="gameover-icon">${poolCleared ? '🎉' : '💀'}</div>
+        <h2>${poolCleared ? "Today's pool cleared!" : 'Game Over'}</h2>
+        <p class="gameover-sub">${poolCleared
+          ? 'Every fresh question answered — come back tomorrow for more.'
+          : `${3 - lives} mistake${3 - lives !== 1 ? 's' : ''} ended your run.`
+        }</p>
         <div class="stats">
           <div class="stat">
             <span class="stat-val">${score}</span>
@@ -515,10 +577,12 @@
   // ── Game Logic ────────────────────────────────────────────────────
   function startGame() {
     lives = 3; score = 0; idx = 0; answered = false;
+    const pool = freshPool();
+    if (pool.length === 0) { showPoolEmpty(); return; }
     queue = [
-      ...shuffle(QUESTIONS.filter(q => q.difficulty === 1)),
-      ...shuffle(QUESTIONS.filter(q => q.difficulty === 2)),
-      ...shuffle(QUESTIONS.filter(q => q.difficulty === 3)),
+      ...shuffle(pool.filter(q => q.difficulty === 1)),
+      ...shuffle(pool.filter(q => q.difficulty === 2)),
+      ...shuffle(pool.filter(q => q.difficulty === 3)),
     ];
     showGame();
   }
@@ -530,6 +594,7 @@
     const q = queue[idx];
     const correct = i === q.answer;
     if (correct) score++; else lives--;
+    recordAnswer(q.id, correct);
 
     // Mark buttons
     for (let j = 0; j < q.options.length; j++) {
